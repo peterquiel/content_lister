@@ -1,0 +1,13 @@
+plugin.contentlister {
+   # Welche Tabellen sollen zu Auswahl stehen
+   tables = tt_content, tt_address, tx_qzcompanytable_company
+   
+   # Für jede Tabelle kann eine kommaseparierte liste von 
+   exclude {
+   	tt_address = hidden
+   	tt_content = hidden
+   	tx_qzcompanytable_company = hidden
+   }
+   templateFile = EXT:content_lister/Resources/Private/Templates/template.html
+   paginatorSize = 5
+}

@@ -1,0 +1,222 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+    <title>Company List template</title>
+  </head>
+  <body>
+
+    ###COMMERCIALAREA###
+    ###COMPANYBRANCH###
+
+    ###GENDER###
+    ###DEGREE###
+    ###LASTNAME###
+    ###FIRSTNAME###
+
+    ###COMPANYNAME###
+    ###ADDRESS###
+    ###ZIP###
+    ###CITY###
+    ###COMPANYDESC###
+
+    ###TELEFON###
+    ###FAX###
+    ###EMAIL###
+    ###WEBSITE###
+
+    ###LASTCHANGE###
+
+    ###IMAGE###	
+
+
+    <!-- ###MAP### begin -->
+    <div>###MAPENTRY###</div>
+    <!-- ###MAP### end -->
+
+    <!-- ###PAGINATOR### begin -->
+    <div>###RESULTNOTE###</div>
+    <ul>
+      <!-- ###PAGINATORCONTENT### --->
+
+      <!-- ###FIRST### begin --><li style="float:left; list-style-type: none; margin: 0 3px"><!-- ###LINKITEM### -->&lt;&lt;-<!-- ###LINKITEM### --> </li> <!-- ###FIRST### end -->
+
+      <!-- ###PREVIOUS### begin --><li style="float:left; list-style-type: none; margin: 0 3px"><!-- ###LINKITEM### -->&lt;-<!-- ###LINKITEM### -->  </li> <!-- ###PREVIOUS### end -->
+
+      <!-- ###PAGINATORELEMENT### begin --><li style="float:left; list-style-type: none; margin: 0 3px"><!-- ###LINKITEM### -->Seite ###NUMBER###<!-- ###LINKITEM### --></li><!-- ###PAGINATORELEMENT### begin -->
+
+      <!-- ###NEXT### begin --><li style="float:left; list-style-type: none; margin: 0 3px"><!-- ###LINKITEM### -->-&gt;<!-- ###LINKITEM### --></li><!-- ###NEXT### end -->
+
+      <!-- ###LAST### begin --><li style="float:left; list-style-type: none; margin: 0 3px"><!-- ###LINKITEM### -->-&gt;&gt;<!-- ###LINKITEM### -->  </li> <!-- ###LAST### end -->
+
+      <!-- ###PAGINATORCONTENT### --->
+      <div style="clear:both"></div>
+    </ul>
+    <!-- ###PAGINATOR### end -->
+
+    <!-- ###LETTERLIST### begin -->
+
+    <div>
+      <div style="float:left;">###LETTER###</div>
+    </div>
+
+    <!-- ###LETTERLIST### end -->
+
+    <!-- ###LIST### begin -->		
+
+    ###PAGINATOR###
+    <div>
+      <div style="float:left; width: 24%">
+        Name
+      </div>
+      <div style="float:left; width: 24%">
+        Branche
+      </div>
+      <div style="float:left; width: 24%">
+        Telefon
+      </div>
+      <div style="float:left; width: 24%">
+        Adresse
+      </div>
+      <div style="clear:both"></div>
+    </div>			
+
+    <!-- ###LISTENTRYCONTENT### begin --->
+
+    <!-- ###LISTENTRY_1### begin --->
+    <div>
+      <div style="float:left; width: 24%">
+        ###COMPANYNAME###&nbsp;
+      </div>
+      <div style="float:left; width: 24%">
+        ###BRANCH###&nbsp;
+      </div>
+      <div style="float:left; width: 24%">
+        ###TELEFON###&nbsp;
+      </div>
+      <div style="float:left; width: 24%">
+        ###ADDRESS### &nbsp;
+      </div>
+      <div style="clear:both"></div>
+    </div>
+    <!-- ###LISTENTRY_1### begin --->
+
+
+    <!-- ###LISTENTRY_2### begin --->
+    <div style="background-color: #eee">
+      <div style="float:left; width: 24%">
+        ###COMPANYNAME###&nbsp;
+      </div>
+      <div style="float:left; width: 24%">
+        ###BRANCH###&nbsp;
+      </div>
+      <div style="float:left; width: 24%">
+        ###TELEFON###&nbsp;
+      </div>
+      <div style="float:left; width: 24%">
+        ###ADDRESS### &nbsp;
+      </div>
+      <div style="clear:both"></div>
+    </div>
+    <!-- ###LISTENTRY_2### begin --->
+
+
+
+    <!-- ###LISTENTRY_3### begin --->
+    <div style="background-color: #999">
+      <div style="float:left; width: 24%">
+        ###COMPANYNAME###
+      </div>
+      <div style="float:left; width: 24%">
+        ###BRANCH###
+      </div>
+      <div style="float:left; width: 24%">
+        ###TELEFON###
+      </div>
+      <div style="float:left; width: 24%">
+        ###ADDRESS###  
+      </div>
+      <div style="clear:both"></div>
+    </div>
+    <!-- ###LISTENTRY_3### begin --->
+
+    <!-- ###LISTENTRYCONTENT### end --->
+
+    </div>
+
+    <!-- ###LIST### end   -->
+
+    <!-- ###NORESULT### begin-->
+    <p>Es wurde nichts gefunden.</p>
+    <!--- ###NORESULT### end -->
+
+
+    <!-- ###CATEGORY### begin  -->
+    <ul>
+      <!-- ###CATEGORYCONTENT### begin -->
+
+      <!-- ###CATEGORYENTRY_1### begin -->
+      <li>###CATEGORYNAME###</li>
+      <!-- ###CATEGORYENTRY_1### end -->
+
+      <!-- ###CATEGORYENTRY_2### begin -->
+      <li style="background-color: #eee">###CATEGORYNAME###</li>
+      <!-- ###CATEGORYENTRY_2### end -->
+
+      <!-- ###CATEGORYCONTENT### end -->
+    </ul>
+    <!-- ###CATEGORY### end    -->
+
+
+    <!-- ###SEARCH### begin   -->
+    <div>
+      <form method="post" action="###FORMURL###">
+        <div>
+          <select name="tx_qzcontentlister[sconnect]">
+            <option value="and">###SEARCH_AND###</option>
+            <option value="or">###SEARCH_OR###</option>
+          </select>
+        </div>
+        <input size="30" maxlength="100" type="text" name="tx_qzcontentlister[swords]" value="###SWORDS###" />
+        <span><input type="submit" name="search" value="###SEARCH_BUTTON###" /></span>
+      </form>
+    </div>			
+
+    <!-- ###SEARCH### end     -->
+
+
+    <!-- ###DETAILVIEW### begin  -->
+
+    ###COMMERCIALAREA### <br />
+    ###BRANCH###<br />
+
+    ###GENDER###<br />
+    ###DEGREE###<br />
+    ###LASTNAME###<br />
+    ###FIRSTNAME###<br />
+
+    ###COMPANYNAME###<br />
+    ###ADDRESS###<br />
+    ###PLZ###<br />
+    ###CITY###<br />
+    ###COMPANYDESCRIPTION###<br />
+
+    ###TELEFON###<br />
+    ###FAX###<br />
+    ###EMAIL###<br />
+    ###WEB###<br />
+
+    ###LASTCHANGE###<br />
+
+    ###IMAGE###	<br />
+
+
+    <!-- ###DETAILVIEW### end    -->
+
+
+    <!-- ###GOOGLEMAPVIEW### begin -->
+
+    <!-- ###GOOGLEMAPVIEW### end -->
+  </body>
+</html>
+

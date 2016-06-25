@@ -1,0 +1,62 @@
+<f:if condition="{renderSearch}">
+<div>
+  <form method="post" action="###FORMURL###">
+    <div>
+      <select name="tx_qzcontentlister[sconnect]">
+        <option value="and">und</option>
+        <option value="or">oder</option>
+      </select>
+    </div>
+    <input size="30" maxlength="100" type="text" name="tx_qzcontentlister[swords]" value="###SWORDS###" />
+    <span><input type="submit" name="search" value="Suchen" /></span>
+  </form>
+</div>
+</f:if>
+
+<f:if condition="{renderList}">
+<div>
+  <div style="float:left; width: 24%">
+    Name
+  </div>
+  <div style="float:left; width: 24%">
+    E-Mail
+  </div>
+  <div style="float:left; width: 24%">
+    Telefon
+  </div>
+  <div style="float:left; width: 24%">
+    Adresse
+  </div>
+  <div style="clear:both"></div>
+</div>
+<f:for each="{listEntries}" as="row">
+<div>
+  <div style="float:left; width: 24%">
+    <f:link.action controller="List" action="detail" arguments="{showUid:row.uid}">
+    {row.name} 
+    </f:link.action>
+  </div>
+  <div style="float:left; width: 24%">
+    {row.email}
+  </div>
+  <div style="float:left; width: 24%">
+    {row.phone}
+  </div>
+  <div style="float:left; width: 24%">
+    {row.address}
+  </div>
+  <div style="clear:both"></div>
+</div>
+</f:for>
+</f:if>
+
+<f:if condition="{renderCategory}">
+<p>This is the Category</p>
+</f:if>
+
+<f:if condition="{renderDetail}">
+<div>{detailEntry.name}</div>
+<div>{detailEntry.email}</div>
+<div>{detailEntry.phone}</div>
+<div>{detailEntry.address}</div>
+</f:if>
