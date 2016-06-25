@@ -1,62 +1,101 @@
-<f:if condition="{renderSearch}">
-<div>
-  <form method="post" action="###FORMURL###">
-    <div>
-      <select name="tx_qzcontentlister[sconnect]">
-        <option value="and">und</option>
-        <option value="or">oder</option>
-      </select>
-    </div>
-    <input size="30" maxlength="100" type="text" name="tx_qzcontentlister[swords]" value="###SWORDS###" />
-    <span><input type="submit" name="search" value="Suchen" /></span>
-  </form>
-</div>
-</f:if>
+<div class="firmenverzeichnis">
+    <f:if condition="{renderSearch}">
+        <div class="search">
+            <f:form method="post" action="search" controller="List" class="form-inlne">
+                <div class="form-group">
+                    <label class="sr-only" for="searchoperator">Such Operator</label>
+                    <f:form.select options="{searchoperatordata}" name="searchoperator" id="searchoperator" class="form-control" value="{searchoperator}">
+                        </f:form.select>
+                </div>
+                <div class="form-group">
+                    <label class="sr-only" for="">Suchwort</label>
+                    <f:form.textfield size="30" maxlength="100" type="text" name="searchword" id="searchword" value="{searchword}" class="form-control" placeholder="suchwort" />
+                </div>
+                <div class="form-group">
+                    <f:form.button type="submit" class="btn btn-default">Suchen</f:form.button>
+                </div>
+            </f:form>
+        </div>
+    </f:if>
 
-<f:if condition="{renderList}">
-<div>
-  <div style="float:left; width: 24%">
-    Name
-  </div>
-  <div style="float:left; width: 24%">
-    E-Mail
-  </div>
-  <div style="float:left; width: 24%">
-    Telefon
-  </div>
-  <div style="float:left; width: 24%">
-    Adresse
-  </div>
-  <div style="clear:both"></div>
-</div>
-<f:for each="{listEntries}" as="row">
-<div>
-  <div style="float:left; width: 24%">
-    <f:link.action controller="List" action="detail" arguments="{showUid:row.uid}">
-    {row.name} 
-    </f:link.action>
-  </div>
-  <div style="float:left; width: 24%">
-    {row.email}
-  </div>
-  <div style="float:left; width: 24%">
-    {row.phone}
-  </div>
-  <div style="float:left; width: 24%">
-    {row.address}
-  </div>
-  <div style="clear:both"></div>
-</div>
-</f:for>
-</f:if>
+    <f:if condition="{renderList}">
+        <h2>Firmenverzeichnis</h2>
 
-<f:if condition="{renderCategory}">
-<p>This is the Category</p>
-</f:if>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Firmenname</th>
+                    <th>Branche</th>
+                    <th>Telefon</th>
+                </tr>
+            </thead>
+            <tbody>
+                <f:for each="{listEntries}" as="row">
+                    <tr>
+                        <td>
+                            <f:link.action controller="List" action="detail" arguments="{showUid:row.uid}">
+                                {row.companyname}
+                            </f:link.action>
+                        </td>
+                        <td>{row.branch}</td>
+                        <td>{row.telefon}</td>
+                    </tr>
+                </f:for>
+            </tbody>
+        </table>
+    </f:if>
 
-<f:if condition="{renderDetail}">
-<div>{detailEntry.name}</div>
-<div>{detailEntry.email}</div>
-<div>{detailEntry.phone}</div>
-<div>{detailEntry.address}</div>
-</f:if>
+    <f:if condition="{renderCategory}">
+        <p>This is the Category</p>
+    </f:if>
+
+    <f:if condition="{renderDetail}">
+
+        <div class="detail_view">
+            <h2>
+                <a href="{detailEntry.web}">
+                    {detailEntry.companyname}
+                </a>
+            </h2>
+            <h3>Kontaktdaten</h3>
+            <div class="row">
+                <div class="col-md-2">Ansprechpartner:</div>
+                <div class="col-md-6">{detailEntry.degree} {detailEntry.firstname} {detailEntry.lastname}</div>
+            </div>
+            <div class="row">
+                <div class="col-md-2">Adresse:</div>
+                <div class="col-md-6">
+                    <a href="http://maps.google.de/maps?f=q&hl=de&geocode=&q={detailEntry.address} {detailEntry.plz} {detailEntry.city}">
+                        {detailEntry.address} {detailEntry.plz} {detailEntry.city}
+                    </a>
+                </div>
+            </div>
+            <f:if condition="{detailEntry.email}">
+                <div class="row">
+                    <div class="col-md-2">E-Mailadresse:</div>
+                    <div class="col-md-6">
+                        <f:link.email email="{detailEntry.email}" /> 
+                    </div>
+                </div>
+            </f:if>
+            <f:if condition="{detailEntry.telefon}">
+                <div class="row">
+                    <div class="col-md-2">Telefon:</div>
+                    <div class="col-md-6">{detailEntry.telefon}</div>
+                </div>
+            </f:if>
+            <f:if condition="{detailEntry.fax}">
+                <div class="row">
+                    <div class="col-md-2">Fax:</div>
+                    <div class="col-md-6">{detailEntry.fax}</div>
+                </div>
+            </f:if>
+            <f:if condition="{detailEntry.companydescription}">
+                <h3>Unternehmensbeschreibung:</h3>
+                <p>
+                    <f:format.html> {detailEntry.companydescription}</f:format.html>
+                </p>
+            </f:if>
+        </div>
+    </f:if>
+</div>
