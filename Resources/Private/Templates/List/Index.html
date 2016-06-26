@@ -3,11 +3,6 @@
         <div class="search">
             <f:form method="post" action="search" controller="List" class="form-inlne">
                 <div class="form-group">
-                    <label class="sr-only" for="searchoperator">Such Operator</label>
-                    <f:form.select options="{searchoperatordata}" name="searchoperator" id="searchoperator" class="form-control" value="{searchoperator}">
-                        </f:form.select>
-                </div>
-                <div class="form-group">
                     <label class="sr-only" for="">Suchwort</label>
                     <f:form.textfield size="30" maxlength="100" type="text" name="searchword" id="searchword" value="{searchword}" class="form-control" placeholder="suchwort" />
                 </div>
@@ -43,50 +38,76 @@
                 </f:for>
             </tbody>
         </table>
+
+        <f:if condition="{showPaginator}">
+        <ul class="pagination">
+            <f:for each="{pages}" as="p">
+            <f:link.action action="list" additionalParams="{tx_contentlister_contentlist :{ page : '{p}'}}">{p}</f:link.action>
+            </f:for>
+        </ul>
+        </f:if>
     </f:if>
 
     <f:if condition="{renderCategory}">
-        <p>This is the Category</p>
+        <h2>Branchenverzeichnis</h2>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Branche</th>
+                </tr>
+            </thead>
+            <tbody>
+                <f:for each="{listEntries}" as="row">
+                    <tr>
+                        <td>
+                            <f:link.action action="list" additionalParams="{tx_contentlister_contentlist :{ categoryFilter : '{row.branch}'}}">
+                                {row.branch}
+                            </f:link.action>
+                        </td>
+                    </tr>
+                </f:for>
+            </tbody>
+        </table>
     </f:if>
 
     <f:if condition="{renderDetail}">
 
         <div class="detail_view">
             <h2>
-                <a href="{detailEntry.web}">
-                    {detailEntry.companyname}
-                </a>
-            </h2>
+            <a href="{detailEntry.web}">
+                {detailEntry.companyname}
+            </a>
+        </h2>
             <h3>Kontaktdaten</h3>
             <div class="row">
-                <div class="col-md-2">Ansprechpartner:</div>
+                <div class="col-md-4">Ansprechpartner:</div>
                 <div class="col-md-6">{detailEntry.degree} {detailEntry.firstname} {detailEntry.lastname}</div>
             </div>
             <div class="row">
-                <div class="col-md-2">Adresse:</div>
+                <div class="col-md-4">Adresse:</div>
                 <div class="col-md-6">
                     <a href="http://maps.google.de/maps?f=q&hl=de&geocode=&q={detailEntry.address} {detailEntry.plz} {detailEntry.city}">
-                        {detailEntry.address} {detailEntry.plz} {detailEntry.city}
-                    </a>
+                    {detailEntry.address} {detailEntry.plz} {detailEntry.city}
+                </a>
                 </div>
             </div>
             <f:if condition="{detailEntry.email}">
                 <div class="row">
-                    <div class="col-md-2">E-Mailadresse:</div>
+                    <div class="col-md-4">E-Mailadresse:</div>
                     <div class="col-md-6">
-                        <f:link.email email="{detailEntry.email}" /> 
+                        <f:link.email email="{detailEntry.email}" />
                     </div>
                 </div>
             </f:if>
             <f:if condition="{detailEntry.telefon}">
                 <div class="row">
-                    <div class="col-md-2">Telefon:</div>
+                    <div class="col-md-4">Telefon:</div>
                     <div class="col-md-6">{detailEntry.telefon}</div>
                 </div>
             </f:if>
             <f:if condition="{detailEntry.fax}">
                 <div class="row">
-                    <div class="col-md-2">Fax:</div>
+                    <div class="col-md-4">Fax:</div>
                     <div class="col-md-6">{detailEntry.fax}</div>
                 </div>
             </f:if>

@@ -11,19 +11,16 @@ class Tx_ContentLister_Controller_ListController extends ActionController {
     public $uploadDir = 'uploads/tx_contentlister/';
 
     public function initializeAction(){
-        t3lib_utility_Debug::debug($this->settings);
+        //t3lib_utility_Debug::debug($this->settings);
     }
-    
+
     /**
      *  @param string $searchword
-     *  @param string $searchoperator
      *   */
-    public function searchAction($searchword='*', $searchoperator='and') {
-        t3lib_utility_Debug::debug("searchword:". $searchword . " op:" . $searchoperator);
+    public function searchAction($searchword='*') {
         $this->initView();
         $this->initSearch();
         $this->view->assign('searchword', $searchword);
-        $this->view->assign('searchoperator', $searchoperator);
         $this->view->assign('renderList', true);
         if($this->settings['flexform']['show_search']){
             $this->view->assign('renderSearch', true);
@@ -36,14 +33,25 @@ class Tx_ContentLister_Controller_ListController extends ActionController {
         $this->initSearch();
         t3lib_utility_Debug::debug($this->request->getArguments());
         $this->view->assign('url', $this->uriBuilder->getRequest()->getRequestUri());
-
-        $this->view->assign('renderList', true);
+        if($this->getCategory() == null || $this->hasCategoryFilter()) {
+            $this->view->assign('renderList', true);
+        } else {
+            $this->view->assign('renderCategory', true);
+        }
         $this->view->assign('listEntries', $this->fetchEntryList());
-    }
-
-    public function categoryAction() {
-        $this->initView();
-        $this->view->assign('renderCategory', true);
+        // calc paginator info after the result size has been set by the fetchEntryList function.
+        $this->view->assign('page',$this->getPage() );
+        $this->view->assign('pageSize',$this->getPageSize() );
+        $this->view->assign('showPaginator',$this->getShowPaginator() );
+        $numberOfPages = ceil($this->resultSize / $this->getPageSize());
+        if($numberOfPages > 1 ) {
+            $pages = array();
+            for($i=1; $i <= $numberOfPages; $i ++) {
+                $pages[$i] = $i;
+            }
+            $this->view->assign('pages', $pages);
+            //t3lib_utility_Debug::debug($pages);
+        }
     }
 
     public function detailAction() {
@@ -52,20 +60,16 @@ class Tx_ContentLister_Controller_ListController extends ActionController {
         if($this->request->hasArgument('showUid')){
             $pageRepository = t3lib_div::makeInstance('\TYPO3\CMS\Frontend\Page\PageRepository');
             $this->view->assign('detailEntry', $pageRepository->checkRecord($this->getSelectedTable(), $this->request->getArgument('showUid')));
-        } else{
-            // todo redirect to list view
         }
     }
 
     private function initSearch() {
         if($this->settings['flexform']['show_search']){
             $this->view->assign('renderSearch', true);
-            $this->view->assign('searchoperatordata', array('or' => 'Oder', 'and' => 'Und'));
         }
     }
     private function initView(){
         $this->view->assign('settings', $this->settings);
-
         $templateFile = $this->getTemplateFile();
         if (!$templateFile) {
             $templateFile = t3lib_extMgm::extPath('content_lister') . 'Resources/Private/Templates/List/Index.html';
@@ -104,8 +108,11 @@ class Tx_ContentLister_Controller_ListController extends ActionController {
             $statement = ($catCriteria !== null) ? $catCriteria : $searchCriteria;
         }
         $statement = ($statement == null) ? $this->getRestrictStatement() : $statement . ' and ' . $this->getRestrictStatement();
+        t3lib_utility_Debug::debug($statement);
+
         if($this->getShowPaginator()){
             $resultSizeRes = $db->sql_fetch_row($db->exec_SELECTquery('count(uid)',$this->getSelectedTable(),$statement ));
+            $this->view->assign('resultSize', $resultSizeRes[0] );
             $this->resultSize = $resultSizeRes[0];
             $limit = ($this->getPage()-1) * $this->getPageSize() . ', ' . $this->getPageSize();
             $result = $db->exec_SELECTquery('*',$this->getSelectedTable(),$statement,'', $this->getOrderBy(),  $limit);
@@ -113,7 +120,6 @@ class Tx_ContentLister_Controller_ListController extends ActionController {
             $result = $db->exec_SELECTquery('*',$this->getSelectedTable(),$statement,'', $this->getOrderBy());
             $this->resultSize = $db->sql_num_rows($result);
         }
-        t3lib_utility_Debug::debug($this->getSelectedTable());
         return ($db->sql_num_rows($result) > 0) ? $result : null;
     }
 
@@ -130,11 +136,13 @@ class Tx_ContentLister_Controller_ListController extends ActionController {
         if($this->request->hasArgument('page')) {
             $page = intval($this->request->getArgument('page'));
         }
+
+        t3lib_utility_Debug::debug($page);
         return ($page > 1) ? $page : 1;
     }
 
     protected function getPageSize(){
-        $pageSize = 1;
+        $pageSize = null;
         if($this->request->hasArgument('pageSize')){
             $pageSize = intval($this->request->getArgument('pageSize'));
         }
@@ -142,21 +150,6 @@ class Tx_ContentLister_Controller_ListController extends ActionController {
         return ($pageSize > 5) ? $pageSize : 5;
     }
 
-    /* holt die list der categorien und gibt sie als mysql result zurück */
-    protected function fetchCategoryList(){
-        /**
-         * Die Funktion fullQuoteStr schützt die Datenbank for SQLInjection
-         *
-         */
-        $statement = $this->getCategoryCriteria();
-        $statement = ($statement == null) ? $this->getRestrictStatement() : $statement . ' and ' . $this->getRestrictStatement();
-        $result = $GLOBALS['TYPO3_DB']->exec_SELECTquery('distinct ' . $this->getCategory(),$this->getSelectedTable(), $statement ,'',$this->getCategory() );
-        $GLOBALS['TYPO3_DB']->sql_num_rows($result);
-        if($GLOBALS['TYPO3_DB']->sql_num_rows($result)> 0){
-            return $result;
-        }
-        return null;
-    }
 
     /* holt eine eintrag für die detailansicht und gibt den eintrag zurück  */
     protected function fetchDetailEntry(){
@@ -212,8 +205,8 @@ class Tx_ContentLister_Controller_ListController extends ActionController {
     }
 
     protected function getSearchWords(){
-        if($this->request->hasArgument('swords')){
-            return $this->request->getArgmuent('swords');
+        if($this->request->hasArgument('searchword')){
+            return $this->request->getArgument('searchword');
         }
         return null;
     }
@@ -226,17 +219,20 @@ class Tx_ContentLister_Controller_ListController extends ActionController {
     protected function getShowCategory(){
         $formCategory = $this->settings['flexform']['show_category'];
         $categoryArray = array();
-        if($this->request->hasArgument('category') || $formCategory){
+        if($this->hasCategoryFilter() || $formCategory){
             if($formCategory){
                 $categoryArray = explode(',', $formCategory);
             }
-            if($this->request->hasArgument('category')){
-                $categoryArray[] = trim($this->request->getArgument('category'));
+            if($this->hasCategoryFilter()){
+                $categoryArray[] = trim($this->request->getArgument('categoryFilter'));
             }
         }
         return $categoryArray;
     }
 
+    protected function hasCategoryFilter() {
+        return $this->request->hasArgument('categoryFilter');
+    }
 
     protected function getOrderBy(){
         $order = $this->settings['flexform']['order_by'];
