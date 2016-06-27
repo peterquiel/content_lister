@@ -14,46 +14,45 @@ class Tx_ContentLister_Controller_ListController extends ActionController {
         //t3lib_utility_Debug::debug($this->settings);
     }
 
-    /**
-     *  @param string $searchword
-     *   */
-    public function searchAction($searchword='*') {
-        $this->initView();
-        $this->initSearch();
-        $this->view->assign('searchword', $searchword);
-        $this->view->assign('renderList', true);
-        if($this->settings['flexform']['show_search']){
-            $this->view->assign('renderSearch', true);
-        }
-        $this->view->assign('listEntries', $this->fetchEntryList());
-    }
-
     public function listAction() {
         $this->initView();
         $this->initSearch();
-        t3lib_utility_Debug::debug($this->request->getArguments());
-        $this->view->assign('url', $this->uriBuilder->getRequest()->getRequestUri());
+        $this->view->assign('searchword', $this->getSearchWords() );
+
         if($this->getCategory() == null || $this->hasCategoryFilter()) {
             $this->view->assign('renderList', true);
+            $this->view->assign('listEntries', $this->fetchEntryList());
         } else {
+            $this->view->assign('listEntries', $this->fetchCategoryList());
             $this->view->assign('renderCategory', true);
         }
-        $this->view->assign('listEntries', $this->fetchEntryList());
+        $this->initPaginator();
+    }
+
+
+    private function initPaginator() {
         // calc paginator info after the result size has been set by the fetchEntryList function.
-        $this->view->assign('page',$this->getPage() );
+        $currentPage = $this->getPage();
+        $this->view->assign('page',$currentPage );
         $this->view->assign('pageSize',$this->getPageSize() );
         $this->view->assign('showPaginator',$this->getShowPaginator() );
         $numberOfPages = ceil($this->resultSize / $this->getPageSize());
+
+        $startPage=$currentPage - 5 - max(0, $currentPage + 5 - $numberOfPages);
+        $startPage=max(1, $startPage);
+        $endPage=$currentPage + 5 - min(0, $currentPage - 5);
+        $endPage= min($endPage, $numberOfPages);
         if($numberOfPages > 1 ) {
             $pages = array();
-            for($i=1; $i <= $numberOfPages; $i ++) {
+            for($i=$startPage; $i <= $endPage; $i ++) {
                 $pages[$i] = $i;
             }
             $this->view->assign('pages', $pages);
-            //t3lib_utility_Debug::debug($pages);
+            $this->view->assign('printFirstPage', ($startPage > 1));
+            $this->view->assign('printLastPage', ($endPage < $numberOfPages));
+            $this->view->assign('lastPage', $numberOfPages);
         }
     }
-
     public function detailAction() {
         $this->initView();
         $this->view->assign('renderDetail', true);
@@ -108,8 +107,7 @@ class Tx_ContentLister_Controller_ListController extends ActionController {
             $statement = ($catCriteria !== null) ? $catCriteria : $searchCriteria;
         }
         $statement = ($statement == null) ? $this->getRestrictStatement() : $statement . ' and ' . $this->getRestrictStatement();
-        t3lib_utility_Debug::debug($statement);
-
+        //t3lib_utility_Debug::debug($statement);
         if($this->getShowPaginator()){
             $resultSizeRes = $db->sql_fetch_row($db->exec_SELECTquery('count(uid)',$this->getSelectedTable(),$statement ));
             $this->view->assign('resultSize', $resultSizeRes[0] );
@@ -121,6 +119,22 @@ class Tx_ContentLister_Controller_ListController extends ActionController {
             $this->resultSize = $db->sql_num_rows($result);
         }
         return ($db->sql_num_rows($result) > 0) ? $result : null;
+    }
+
+    /* holt die list der categorien und gibt sie als mysql result zurück */
+    protected function fetchCategoryList(){
+        /**
+         * Die Funktion fullQuoteStr schützt die Datenbank for SQLInjection
+         *
+         */
+        $statement = $this->getCategoryCriteria();
+        $statement = ($statement == null) ? $this->getRestrictStatement() : $statement . ' and ' . $this->getRestrictStatement();
+        $result = $GLOBALS['TYPO3_DB']->exec_SELECTquery('distinct ' . $this->getCategory(),$this->getSelectedTable(), $statement ,'',$this->getCategory() );
+        $GLOBALS['TYPO3_DB']->sql_num_rows($result);
+        if($GLOBALS['TYPO3_DB']->sql_num_rows($result)> 0){
+            return $result;
+        }
+        return null;
     }
 
     protected function getSelectedTable(){
@@ -137,7 +151,7 @@ class Tx_ContentLister_Controller_ListController extends ActionController {
             $page = intval($this->request->getArgument('page'));
         }
 
-        t3lib_utility_Debug::debug($page);
+        //t3lib_utility_Debug::debug($page);
         return ($page > 1) ? $page : 1;
     }
 

@@ -1,7 +1,7 @@
 <div class="firmenverzeichnis">
     <f:if condition="{renderSearch}">
         <div class="search">
-            <f:form method="post" action="search" controller="List" class="form-inlne">
+            <f:form method="post" action="list" controller="List" class="form-inlne">
                 <div class="form-group">
                     <label class="sr-only" for="">Suchwort</label>
                     <f:form.textfield size="30" maxlength="100" type="text" name="searchword" id="searchword" value="{searchword}" class="form-control" placeholder="suchwort" />
@@ -39,13 +39,6 @@
             </tbody>
         </table>
 
-        <f:if condition="{showPaginator}">
-        <ul class="pagination">
-            <f:for each="{pages}" as="p">
-            <f:link.action action="list" additionalParams="{tx_contentlister_contentlist :{ page : '{p}'}}">{p}</f:link.action>
-            </f:for>
-        </ul>
-        </f:if>
     </f:if>
 
     <f:if condition="{renderCategory}">
@@ -70,14 +63,28 @@
         </table>
     </f:if>
 
+    <f:if condition="{showPaginator}">
+        <ul class="pagination">
+            <f:if condition="{printFirstPage}">
+                <f:link.action action="list" additionalParams="{tx_contentlister_contentlist :{ page : '1', searchword : '{searchword}'}}">&lt;&lt;</f:link.action>
+            </f:if>
+            <f:for each="{pages}" as="p">
+                <f:link.action action="list" additionalParams="{tx_contentlister_contentlist :{ page : '{p}', searchword : '{searchword}'}}">{p}</f:link.action>
+            </f:for>
+            <f:if condition="{printLastPage}">
+                <f:link.action action="list" additionalParams="{tx_contentlister_contentlist :{ page : '{lastPage}', searchword : '{searchword}'}}">&gt;&gt;</f:link.action>
+            </f:if>
+        </ul>
+    </f:if>
+
     <f:if condition="{renderDetail}">
 
         <div class="detail_view">
             <h2>
-            <a href="{detailEntry.web}">
-                {detailEntry.companyname}
-            </a>
-        </h2>
+                <a href="{detailEntry.web}">
+                    {detailEntry.companyname}
+                </a>
+            </h2>
             <h3>Kontaktdaten</h3>
             <div class="row">
                 <div class="col-md-4">Ansprechpartner:</div>
@@ -87,8 +94,8 @@
                 <div class="col-md-4">Adresse:</div>
                 <div class="col-md-6">
                     <a href="http://maps.google.de/maps?f=q&hl=de&geocode=&q={detailEntry.address} {detailEntry.plz} {detailEntry.city}">
-                    {detailEntry.address} {detailEntry.plz} {detailEntry.city}
-                </a>
+                        {detailEntry.address} {detailEntry.plz} {detailEntry.city}
+                    </a>
                 </div>
             </div>
             <f:if condition="{detailEntry.email}">
